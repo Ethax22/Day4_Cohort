@@ -1,37 +1,53 @@
-const {readData,writeData}=require("../utils/fileStorage")
-const idGen=require("../utils/idGenerator")
-const cryptoService=require("./cryptoService")
+const { readData, writeData } = require("../utils/fileStorage")
+const idGen = require("../utils/idGenerator")
+const cryptoService = require("./cryptoService")
 
-const FILE="data/data.json"
+const FILE = "data/data.json"
 
-exports.create=function(data){
+exports.create = function (data) {
 
-const list=readData(FILE)
+    const list = readData(FILE)
 
-const item={
-id:idGen(list),
-title:data.title,
-secret:cryptoService.encrypt(data.secret)
+    const item = {
+        id: idGen(list),
+        title: data.title,
+        secret: cryptoService.encrypt(data.secret),
+        amount: data.amount,
+        type: data.type
+    }
+
+    list.push(item)
+
+    writeData(FILE, list)
+
+    return item
+
 }
 
-list.push(item)
+exports.list = function () {
+    const list = readData(FILE);
+    let totalBalance = 0;
 
-writeData(FILE,list)
+    list.forEach(item => {
+        const amount = Number(item.amount) || 0;
+        if (item.type === 'income') {
+            totalBalance += amount;
+        } else if (item.type === 'expense') {
+            totalBalance -= amount;
+        } else {
+            totalBalance += amount;
+        }
+    });
 
-return item
-
+    return { transactions: list, balance: totalBalance };
 }
 
-exports.list=function(){
-return readData(FILE)
-}
 
-exports.remove=function(id){
+exports.remove = function (id) {
+    const list = readData(FILE)
 
-const list=readData(FILE)
+    const newList=list.filter(i=>i.id!==id)
 
-const newList=list.filter(i=>i.id!==id)
-
-writeData(FILE,newList)
+    writeData(FILE, newList)
 
 }
