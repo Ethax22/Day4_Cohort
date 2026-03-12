@@ -44,10 +44,9 @@ exports.list = function () {
 
 
 exports.remove = function (id) {
-
     const list = readData(FILE)
 
-    const newList = list.filter(i => i.id != id)
+    const newList=list.filter(i=>i.id!==id)
 
     writeData(FILE, newList)
 
