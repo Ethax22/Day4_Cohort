@@ -1,12 +1,23 @@
 const service = require("../services/mainService")
 
 exports.create = (req, res) => {
-    if (!req.body.title || !req.body.secret) {
-        return res.status(400).json({ message: "Missing required fields: title and secret" })
+    const { title, secret, amount, type } = req.body;
+
+
+    if (
+        !title ||
+        !secret ||
+        amount === undefined || typeof amount !== 'number' || isNaN(amount) ||
+        amount <= 0 || !['income', 'expense'].includes(type)
+    ) {
+        return res.status(400).json({ message: "Invalid or missing required fields" })
     }
+
     const item = service.create(req.body)
     res.json(item)
 }
+
+
 
 exports.list = (req, res) => {
     const data = service.list()
